@@ -88,6 +88,21 @@ class CarAPI extends API {
                         , $this->httpStatusCode(304, $this->errorMsg));
                     }
                 }
+                break;
+            case "PUT":
+                /* Overwrite a car or create if not exist */
+                if (is_null($this->id) OR is_null($this->arrayInput)) {
+                    return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(400, $this->errorMsg));    
+                } else {
+                    if ($this->overwriteOneCar($this->id, $this->arrayInput)) {
+                        return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(204));
+                    } else {
+                        return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(304, $this->errorMsg));
+                    }
+                }
                 break;    
             default:
                 return $this->returnJSON(array(), "cars", array()
@@ -150,6 +165,8 @@ class CarAPI extends API {
     }
     private function saveOneCar($data)
     {
+        if ($this->checkSuppliedKeys($data, array("make", "model", "platform"))===false) { return false; }
+        
         if (($cleanData = $this->checkSuppliedData($data, array("make", "model", "platform"))) === false) {
             return false;
         }
@@ -217,6 +234,36 @@ class CarAPI extends API {
         
         
     }
+    private function overwriteOneCar($id, $data)
+    {
+        if (($cleanData = $this->checkSuppliedData($data, array("make", "model", "platform"))) === false) {
+            return false;
+        }
+        if(($db = $this->connectToDB()) === false) { return false; }
+        /* check if the id exist in the table */
+        $strSQL = "SELECT id  
+            FROM cars_test 
+            WHERE id = ?";
+        try {
+            $stmt = $db->prepare($strSQL);
+            $stmt->bindValue(1, $id, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()>0) {
+                /* record exist, update the record */
+                return $this->updateOneCar($id, $data);
+            } else {
+                /* record does not exist, create the record */
+                return $this->saveOneCar($data);
+            }
+            
+        } catch(PDOException $ex) {
+            printf("<br>Error %s: %s", __METHOD__, $ex->getMessage());
+            $this->errorMsg = $ex->getMessage();
+            return false;    
+        }
+    
+    
+    }
     
     private function checkSuppliedData(array $data, array $fields)
     {
@@ -228,6 +275,16 @@ class CarAPI extends API {
             $cleanData[$key] = $val;    
         }
         return $cleanData;
+    }
+    private function checkSuppliedKeys(array $data, array $keys)
+    {
+        /**
+        * To return true, all keys need to be in the data array
+        */
+        foreach ($keys AS $key) {
+            if (!key_exists($key, $data)) { return false; }
+        }
+        return true;
     }
 }/* end of class */  
 ?>
