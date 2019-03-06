@@ -55,12 +55,40 @@ class CarAPI extends API {
                             return $this->returnJSON(array(), "cars", array()
                         , $this->httpStatusCode(304, $this->errorMsg));
                         }
+                    } elseif ($this->verb === "batch") {
+                        /* batch save car */
+                        if ($this->saveBatchCar($this->arrayInput)) {
+                            return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(204));
+                        } else {
+                            return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(304, $this->errorMsg));
+                        }
+                    
+                    } else {
+                        return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(400, "No such endpoint verb"));
                     }
                 } else {
                     return $this->returnJSON(array(), "cars", array()
                         , $this->httpStatusCode(400, "No Data"));    
                 }
                 break;
+            case "PATCH":
+                /* update a car using an id */
+                if (is_null($this->id) OR is_null($this->arrayInput)) {
+                    return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(400, $this->errorMsg));    
+                } else {
+                    if ($this->updateOneCar($this->id, $this->arrayInput)) {
+                        return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(204));
+                    } else {
+                        return $this->returnJSON(array(), "cars", array()
+                        , $this->httpStatusCode(304, $this->errorMsg));
+                    }
+                }
+                break;    
             default:
                 return $this->returnJSON(array(), "cars", array()
                         , $this->httpStatusCode(404, "Unknown Method"));     
@@ -145,6 +173,49 @@ class CarAPI extends API {
             $this->errorMsg = $ex->getMessage();
             return false;     
         }
+    }
+    private function saveBatchCar($data)
+    {
+        foreach ($data AS $value) {
+            if (is_array($value)) {
+                if ($this->saveOneCar($value)===false) { return false; }
+            }
+        }
+        return true;
+    }
+    private function updateOneCar($id, $data)
+    {
+        if (($cleanData = $this->checkSuppliedData($data, array("make", "model", "platform"))) === false) {
+            return false;
+        }
+        if(($db = $this->connectToDB()) === false) { return false; }
+        $strSQL = "UPDATE cars_test 
+        SET ";
+        foreach ($cleanData as $key => $val) {
+            $strSQL.= ucfirst($key).' = :'.$key.',';
+        }
+        $strSQL = rtrim($strSQL, ',');    
+        $strSQL.= " WHERE id = :id";
+        
+        try {
+            $stmt = $db->prepare($strSQL);
+            foreach ($cleanData as $key => $val) {
+                $stmt->bindValue(":".$key, $val, PDO::PARAM_STR);       
+            }
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()>0) {
+                return true;
+            } else {
+                return false;
+            }    
+        } catch(PDOException $ex) {
+            printf("<br>Error %s: %s", __METHOD__, $ex->getMessage());
+            $this->errorMsg = $ex->getMessage();
+            return false;
+        }
+        
+        
     }
     
     private function checkSuppliedData(array $data, array $fields)
