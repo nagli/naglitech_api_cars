@@ -2,7 +2,6 @@
     /**
     * This is the entry point of the REST API
     * 
-    * GET = http://localhost/naglitech/naglitech_api_cars/v1/[endpoint]/[verb]/[args]
     */
     
     require_once("CarAPI.php");

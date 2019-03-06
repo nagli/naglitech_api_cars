@@ -12,13 +12,25 @@ class CarAPI extends API {
         switch (strtoupper($this->method)) {
             case "GET":
                 if (is_null($this->id)) {
-                    /*Get all cars*/
-                    if (($carList=$this->listAllCars())===false) {
-                        return $this->returnJSON(array(), "cars", array()
-                            , $this->httpStatusCode(500, $this->errorMsg));
+                    
+                    if (is_null($this->addArgs)) {
+                        /*Get all cars*/
+                        if (($carList=$this->listAllCars())===false) {
+                            return $this->returnJSON(array(), "cars", array()
+                                , $this->httpStatusCode(500, $this->errorMsg));
+                        } else {
+                            return $this->returnJSON($carList, "cars", array()
+                            , $this->httpStatusCode(200));
+                        }
                     } else {
-                        return $this->returnJSON($carList, "cars", array()
-                        , $this->httpStatusCode(200));
+                        /*Get cars with args*/
+                        if (($carList=$this->listCarsWArgs($this->addArgs))===false) {
+                            return $this->returnJSON(array(), "cars", array()
+                                , $this->httpStatusCode(500, $this->errorMsg));
+                        } else {
+                            return $this->returnJSON($carList, "cars", array()
+                            , $this->httpStatusCode(200));
+                        }
                     }
                 } else {
                     if (($carList=$this->getOneCar($this->id))===false) {
@@ -117,6 +129,35 @@ class CarAPI extends API {
             ORDER BY Make ASC";
         try{
             $stmt = $db->prepare($strSQL);
+            $stmt->execute();
+            return $stmt->fetchall(PDO::FETCH_ASSOC);
+        } catch(PDOException $ex) {
+            printf("<br>Error %s: %s", __METHOD__, $ex->getMessage());
+            $this->errorMsg = $ex->getMessage();
+            return false;    
+        }
+    }
+    private function listCarsWArgs(array $args)
+    {   
+        if (($cleanArgs = $this->checkSuppliedData($args, array("make", "model")))===false) { return false; }
+        
+        if(($db = $this->connectToDB()) === false) { return false; }
+        $strSQL = "SELECT id, Make, Model, Platform 
+            FROM cars_test 
+            WHERE";
+            
+        foreach ($cleanArgs as $key => $val) {
+            $strSQL.= " ".ucfirst($key)." = :".$key." AND"; 
+        }
+        $strSQL = rtrim($strSQL, 'AND');
+
+        try{
+            $stmt = $db->prepare($strSQL);
+            
+            foreach ($cleanArgs as $key => $val) {
+                $stmt->bindValue(":".$key, $val, PDO::PARAM_STR);    
+            }
+            
             $stmt->execute();
             return $stmt->fetchall(PDO::FETCH_ASSOC);
         } catch(PDOException $ex) {
