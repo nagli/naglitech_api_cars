@@ -8,7 +8,7 @@
     * DELETE /v1/cars/{id}
     * POST /v1/cars/  Body{"make":"", "model":"", "platform":""}
     * POST /v1/cars/  Body[{"make":"", "model":"", "platform":""}, {}, {}]
-    * PATCH /v1/cars/  Body{"make":"", "model":"", "platform":""}
+    * PATCH /v1/cars/{id}  Body{"make":"", "model":"", "platform":""}
     * PUT /v1/cars/{id}  Body{"make":"", "model":"", "platform":""}
     * 
     */
