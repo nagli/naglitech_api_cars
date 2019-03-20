@@ -125,7 +125,7 @@ class CarAPI extends API {
     {
         if(($db = $this->connectToDB()) === false) { return false; }
         $strSQL = "SELECT id, Make, Model, Platform 
-            FROM cars_test
+            FROM cars
             ORDER BY Make ASC";
         try{
             $stmt = $db->prepare($strSQL);
@@ -143,7 +143,7 @@ class CarAPI extends API {
         
         if(($db = $this->connectToDB()) === false) { return false; }
         $strSQL = "SELECT id, Make, Model, Platform 
-            FROM cars_test 
+            FROM cars 
             WHERE";
             
         foreach ($cleanArgs as $key => $val) {
@@ -170,7 +170,7 @@ class CarAPI extends API {
     {
         if(($db = $this->connectToDB()) === false) { return false; }
         $strSQL = "SELECT id, Make, Model, Platform 
-            FROM cars_test
+            FROM cars
             WHERE id = ?";
         try{
             $stmt = $db->prepare($strSQL);
@@ -187,7 +187,7 @@ class CarAPI extends API {
     {
         if(($db = $this->connectToDB()) === false) { return false; }
         $strSQL = "DELETE  
-            FROM cars_test
+            FROM cars
             WHERE id = ?";
         try{
             $stmt = $db->prepare($strSQL);
@@ -212,7 +212,7 @@ class CarAPI extends API {
             return false;
         }
         if(($db = $this->connectToDB()) === false) { return false; }
-        $strSQL = "INSERT INTO cars_test 
+        $strSQL = "INSERT INTO cars 
         (Make, Model, Platform)
         VALUE(?,?,?)";
         try {
@@ -247,7 +247,7 @@ class CarAPI extends API {
             return false;
         }
         if(($db = $this->connectToDB()) === false) { return false; }
-        $strSQL = "UPDATE cars_test 
+        $strSQL = "UPDATE cars 
         SET ";
         foreach ($cleanData as $key => $val) {
             $strSQL.= ucfirst($key).' = :'.$key.',';
@@ -283,7 +283,7 @@ class CarAPI extends API {
         if(($db = $this->connectToDB()) === false) { return false; }
         /* check if the id exist in the table */
         $strSQL = "SELECT id  
-            FROM cars_test 
+            FROM cars 
             WHERE id = ?";
         try {
             $stmt = $db->prepare($strSQL);

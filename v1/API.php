@@ -115,7 +115,8 @@ class API {
     protected function connectToDB()
     {
         try {
-            $db = new PDO('mysql:host=localhost;dbname=bigblackbear;charset=utf8mb4', 'nagli', 'arn2302');
+            $db = new PDO('mysql:host=localhost;dbname=naglitech;charset=utf8mb4', 'nagli', 'arn2302');
+            //$db = new PDO('mysql:host=localhost;dbname=brandyna_naglitech;charset=utf8mb4', 'brandyna_naglite', 'arn?23!02');
         } catch(PDOException $ex) {
             $this->errorMsg = $ex->getMessage();
             return false;         
