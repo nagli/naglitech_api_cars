@@ -305,7 +305,6 @@ class CarAPI extends API {
     
     
     }
-    
     private function checkSuppliedData(array $data, array $fields)
     {
         $cleanData = array();

@@ -75,6 +75,7 @@ class API {
             }
         }
          /* Print out for testing */
+        /*
         printf("<br>Method: %s", var_export($this->method, true));
         printf("<br>Endpoint: %s", var_export($this->endpoint, true));
         printf("<br>Verb: %s", var_export($this->verb, true));
@@ -82,7 +83,7 @@ class API {
         printf("<br>Args:<pre>%s</pre>", var_export($this->args, true));
         printf("<br>Add Args:<pre>%s</pre>", var_export($this->addArgs, true));
         printf("<br>Input:<pre>%s</pre>", var_export($this->arrayInput, true));
-        
+        */
         if ($this->endpoint === "cars") { 
             echo $this->cars(); 
         } else { 
