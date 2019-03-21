@@ -24,7 +24,7 @@ class API {
         //printf("<br>Request:<pre>%s</pre>", var_export($request, true));
         header("Access-Control-Allow-Orgin: *");
         header("Access-Control-Allow-Methods: *");
-        //header("Content-Type: application/json");
+        header("Content-Type: application/json");
         
         $this->method = $_SERVER['REQUEST_METHOD'];
         if ($this->method == 'POST' AND array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
@@ -116,8 +116,8 @@ class API {
     protected function connectToDB()
     {
         try {
-            $db = new PDO('mysql:host=localhost;dbname=naglitech;charset=utf8mb4', 'nagli', 'arn2302');
-            //$db = new PDO('mysql:host=localhost;dbname=brandyna_naglitech;charset=utf8mb4', 'brandyna_naglite', 'arn?23!02');
+            //$db = new PDO('mysql:host=localhost;dbname=naglitech;charset=utf8mb4', 'nagli', 'arn2302');
+            $db = new PDO('mysql:host=localhost;dbname=brandyna_naglitech;charset=utf8mb4', 'brandyna_naglite', 'arn?23!02');
         } catch(PDOException $ex) {
             $this->errorMsg = $ex->getMessage();
             return false;         
