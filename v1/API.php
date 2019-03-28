@@ -1,4 +1,5 @@
 <?php
+require_once("config.php");
 class API {
     /**
     * GET get either the full list of cars or the car with the requested id.
@@ -116,8 +117,7 @@ class API {
     protected function connectToDB()
     {
         try {
-            $db = new PDO('mysql:host=localhost;dbname=naglitech;charset=utf8mb4', 'nagli', 'arn2302');
-            //$db = new PDO('mysql:host=localhost;dbname=brandyna_naglitech;charset=utf8mb4', 'brandyna_naglite', 'arn?23!02');
+            $db = new PDO('mysql:host='.DB_HOST.';dbname='.DB.';charset=utf8mb4', DB_USER, DB_PASSWORD);
         } catch(PDOException $ex) {
             $this->errorMsg = $ex->getMessage();
             return false;         
